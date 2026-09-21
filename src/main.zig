@@ -17,10 +17,7 @@ fn runGame() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    rl.initWindow(
-        800,
-        600,
-    );
+    rl.initWindow(800, 600, bSettings.gameName);
     rl.setTargetFPS(120);
     defer rl.closeWindow();
 

@@ -10,7 +10,14 @@ const io = Io.Threaded.global_single_threaded.io();
 pub var shfps: bool = false;
 const dbgKey: rl.KeyboardKey = rl.KeyboardKey.left_control;
 
-pub fn check(player: *pl.Player) !void {
+pub const DebugCheckError = error{
+    ManuallyTriggeredException,
+    ManuallyTriggeredCrash,
+    ManualForceFallThroughError,
+    OutOfMemory,
+};
+
+pub fn check(player: *pl.Player) DebugCheckError!void {
     if (shfps) {
         rl.drawFPS(0, 0);
     }
@@ -43,8 +50,5 @@ pub fn check(player: *pl.Player) !void {
     }
     if (builtin.mode == .Debug and rl.isKeyDown(dbgKey) and rl.isKeyPressed(rl.KeyboardKey.f5)) {
         return error.ManualForceFallThroughError;
-    }
-    if (builtin.mode == .Debug and rl.isKeyDown(dbgKey) and rl.isKeyPressed(rl.KeyboardKey.f6)) {
-        return error.OutOfMemory;
     }
 }
