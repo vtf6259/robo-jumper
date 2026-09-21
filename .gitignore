@@ -4,3 +4,4 @@ zig-pkg
 
 platformer.app
 local/
+dist/
