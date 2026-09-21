@@ -21,6 +21,11 @@ fn runGame() !void {
     rl.setTargetFPS(120);
     defer rl.closeWindow();
 
+    var icon = try rl.loadImage("assets/icon.png");
+    defer rl.unloadImage(icon);
+    rl.imageFormat(&icon, .uncompressed_r8g8b8a8);
+    rl.setWindowIcon(icon);
+
     const playerTextureDir = try Io.Dir.openDir(.cwd(), io, "assets/autogen/playerAnim", .{ .iterate = true });
     var walk = try playerTextureDir.walk(allocator);
     var playerTexturePaths: std.ArrayList([:0]const u8) = .empty;

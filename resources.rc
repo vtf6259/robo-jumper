@@ -1,0 +1,17 @@
+#define APP_ICON 1
+
+APP_ICON ICON "icon.ico"
+
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "Robo Jumper"
+            VALUE "ProductName", "Robo Jumper"
+        END
+    END
+END

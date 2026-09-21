@@ -45,6 +45,18 @@ fn createDirectory(io: Io, path: []const u8) void {
     };
 }
 
+fn removeDirectory(io: Io, path: []const u8) void {
+    Io.Dir.deleteTree(.cwd(), io, path) catch |err| {
+        std.debug.panic(
+            "failed to delete '{s}': {s}",
+            .{
+                path,
+                @errorName(err),
+            },
+        );
+    };
+}
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{
@@ -71,7 +83,7 @@ pub fn build(b: *std.Build) void {
     // Main module
     // ------------------------------------------------------------
 
-    const mod = b.addModule("2d_platformer", .{
+    const mod = b.addModule("robo_jumper", .{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
@@ -80,14 +92,14 @@ pub fn build(b: *std.Build) void {
     // ------------------------------------------------------------
     // Sprite generation
     // ------------------------------------------------------------
-
+    removeDirectory(Io.Threaded.global_single_threaded.io(), "assets/autogen");
     createDirectory(
         Io.Threaded.global_single_threaded.io(),
         "assets/autogen/playerAnim",
     );
 
     const playerAnim = aseprite(
-        "player.aseprite",
+        "assets/player.aseprite",
         b,
         "assets/autogen/playerAnim",
         b.allocator,
@@ -105,7 +117,7 @@ pub fn build(b: *std.Build) void {
     // ------------------------------------------------------------
 
     const exe = b.addExecutable(.{
-        .name = "2d_platformer",
+        .name = "robo_jumper",
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
             .target = target,
@@ -113,7 +125,7 @@ pub fn build(b: *std.Build) void {
 
             .imports = &.{
                 .{
-                    .name = "2d_platformer",
+                    .name = "robo_jumper",
                     .module = mod,
                 },
             },
@@ -123,6 +135,7 @@ pub fn build(b: *std.Build) void {
     exe.root_module.linkLibrary(raylib_artifact);
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
+    exe.root_module.addWin32ResourceFile(.{ .file = b.path("resources.rc") });
 
     exe.step.dependOn(export_step);
 
@@ -175,7 +188,7 @@ pub fn build(b: *std.Build) void {
     // ------------------------------------------------------------
 
     const dist_exe = b.addExecutable(.{
-        .name = "2d_platformer",
+        .name = "robo_jumper",
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
             .target = target,
@@ -183,7 +196,7 @@ pub fn build(b: *std.Build) void {
 
             .imports = &.{
                 .{
-                    .name = "2d_platformer",
+                    .name = "robo_jumper",
                     .module = mod,
                 },
             },
@@ -192,7 +205,7 @@ pub fn build(b: *std.Build) void {
 
     dist_exe.root_module.linkLibrary(raylib_artifact);
     dist_exe.root_module.addImport("raylib", raylib);
-
+    dist_exe.root_module.addWin32ResourceFile(.{ .file = b.path("resources.rc") });
     dist_exe.step.dependOn(export_step);
 
     // ------------------------------------------------------------
@@ -217,17 +230,17 @@ pub fn build(b: *std.Build) void {
             "-a",
             "-c",
             "-f",
-            "dist/2d_platformer.zip",
+            "dist/robo_jumper.zip",
             "-C",
             "zig-out/bin",
-            "2d_platformer.exe",
+            "robo_jumper.exe",
             "-C",
             "../../",
             "assets",
         });
 
         archive.step.dependOn(&dist_exe.step);
-
+        dist_step.dependOn(&dist_exe.step);
         dist_step.dependOn(&archive.step);
     } else {
         const archive = b.addSystemCommand(&.{
@@ -235,10 +248,10 @@ pub fn build(b: *std.Build) void {
             "-a",
             "-c",
             "-f",
-            "dist/2d_platformer.zip",
+            "dist/robo_jumper.zip",
             "-C",
             "zig-out/bin",
-            "2d_platformer",
+            "robo_jumper",
             "-C",
             "../../",
             "assets",
