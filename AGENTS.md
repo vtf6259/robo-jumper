@@ -21,7 +21,7 @@
 - `zig build test` — run module (`src/root.zig`) and exe (`src/main.zig`) tests. Passes today; there are no `test` blocks in `src/` yet.
 - `zig build sprites` — re-export sprites from `player.aseprite`.
 - `zig build dist` — build a ReleaseSafe binary and package it with `assets/` into `dist/2d_platformer.zip`.
-- `zig fmt build.zig build.zig.zon src/*.zig` — format Zig sources before committing.
+- `zig fmt .` — format Zig sources before committing.
 
 ## Testing Guidelines
 
